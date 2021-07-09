@@ -20,6 +20,11 @@ bool operator!=(const Node& lhs, const Node& rhs){
     return !(lhs==rhs);
 }
 
+std::ostream& operator<< (std::ostream &out, const Node &n){ // here for testing
+    out << "Node(" << n.getRow() << ", " << n.getCol() << ", " << n.isWall() << ")";
+    return out;
+}
+
 int Node::getRow() const{
     return row;
 }
@@ -52,7 +57,7 @@ void Node::setH(double h) {
     this->h = h;
 }
 
-bool Node::isWall() {
+bool Node::isWall() const{
     return isAWall;
 }
 
@@ -65,7 +70,7 @@ void Node::addNeighbor(Node b) {
 }
 
 void Node::setPrevious(Node n) {
-    *previous = n;
+    previous = &n;
 }
 
 Node Node::getPrevious() {

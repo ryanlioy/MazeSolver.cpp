@@ -2,6 +2,7 @@
 #define NODE_H
 
 #include <vector>
+#include <ostream>
 
 class Node{
     private:
@@ -16,6 +17,7 @@ class Node{
         Node();
         friend bool operator==(const Node& lhs, const Node& rhs);
         friend bool operator!=(const Node& lhs, const Node& rhs);
+        friend std::ostream& operator<< (std::ostream &out, const Node &n);
         int getRow() const;
         int getCol() const;
         double getF();
@@ -24,7 +26,7 @@ class Node{
         void setF(double f);
         void setG(double g);
         void setH(double h);
-        bool isWall();
+        bool isWall() const;
         void setIsWall(bool isWall);
         void addNeighbor(Node b);
         void setPrevious(Node n);

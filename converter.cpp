@@ -37,22 +37,25 @@ std::vector<std::vector<Node>> Converter::to2Darray(){
             cv::Vec3b pixel = img.at<cv::Vec3b>(i,j); // in BGR format, doesn't matter though
             if (pixel == BLACK){ // thank God C++ has operator overloading
                 nodes[i][j].setIsWall(true);
+                std::cout << "B";
             }
             else if (pixel == WHITE){
                 nodes[i][j].setIsWall(false);
+                std::cout << "W";
             }
             else{
                 throw std::invalid_argument("Found non white or black pixel in image");
             }
         }
+        std::cout << std::endl;
     }
 
     for (int row = 0; row < width; row++){
         for (int col = 0; col < width; col++){
             // use at().at() becuase at() throws exceptions while operator[] doesn't
+            
             try {
-                //    vvvvvvvvv should always work    vvvvvvvvvv might not work
-                nodes[row][col].addNeighbor(nodes.at(row - 1).at(col)); // Node to the top
+                nodes[row][col].addNeighbor(nodes.at(row).at(col - 1)); // Node to the left
             }
             catch (const std::out_of_range& e) {
                 nodes[row][col].addNeighbor(Node(-1, -1, false));
@@ -66,18 +69,32 @@ std::vector<std::vector<Node>> Converter::to2Darray(){
             }
 
             try {
+                //    vvvvvvvvv should always work    vvvvvvvvvv might not work
+                nodes[row][col].addNeighbor(nodes.at(row - 1).at(col)); // Node to the top
+            }
+            catch (const std::out_of_range& e) {
+                nodes[row][col].addNeighbor(Node(-1, -1, false));
+            }
+            
+            try {
                 nodes[row][col].addNeighbor(nodes.at(row + 1).at(col)); // Node to the bottom
             }
             catch (const std::out_of_range& e) {
                 nodes[row][col].addNeighbor(Node(-1, -1, false));
             }
 
-            try {
-                nodes[row][col].addNeighbor(nodes.at(row).at(col - 1)); // Node to the left
+            
+        }
+    }
+
+    for (int i = 0; i < width; i++){
+        for (int j = 0; j < height; j++){
+            std::cout << "[" << i << "]" << "[" << j << "] ";
+            std::vector<Node> neighbors = nodes[i][j].getNeighbors();
+            for (int k = 0; k < neighbors.size(); k++){
+                std::cout << neighbors[k];
             }
-            catch (const std::out_of_range& e) {
-                nodes[row][col].addNeighbor(Node(-1, -1, false));
-            }
+            std::cout << std::endl;
         }
     }
     return nodes;
@@ -100,7 +117,7 @@ void Converter::toImage(std::vector<std::vector<Node>> graph, std::vector<Node> 
 
 Node Converter::findEndNode(std::vector<std::vector<Node>> graph){
     for (int i = 1; i < height; i++) { // start at 1 because col 0 can never be valid start/end point
-        if (!graph[height - 1][i].isWall()) {
+        if (!graph.at(height - 1).at(i).isWall()) {
             return graph[height - 1][i];
         }
     }
@@ -109,7 +126,7 @@ Node Converter::findEndNode(std::vector<std::vector<Node>> graph){
 
 Node Converter::findStartNode(std::vector<std::vector<Node>> graph){
     for (int i = 1; i < height; i++) {
-        if (!graph[0][i].isWall()) {
+        if (!graph.at(0).at(i).isWall()) {
             return graph[0][i];
         }
     }
